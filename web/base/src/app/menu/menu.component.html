@@ -1,0 +1,33 @@
+<mat-toolbar class="header">
+  <button mat-icon-button aria-label="menu icon" (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="spacer"></span>
+  <span>Microservices application</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="goToGithub()" aria-label="share icon">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-sidenav-container class="container">
+  <mat-sidenav #sidenav mode="side" opened>
+    <mat-button-toggle-group class="menu" cdkMenu name="menu" aria-label="menu">
+      <mat-button-toggle class="menu-item" *ngFor="let item of items | keyvalue" cdkMenuItemRadio
+        [cdkMenuItemChecked]="item.key === selectedItem" (cdkMenuItemTriggered)="selectedItem = item.key">
+        <mat-icon>{{item.value.icon}}</mat-icon>
+        <span *ngIf="!(maxWidth599 | async)">{{item.value.name}}</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <!-- <ng-container *ngIf="!selectedItem">
+      <h3 class="empty">Item not selected</h3>
+    </ng-container> -->
+    <ng-container *ngIf="selectedItem === 'settings'">
+      <app-settings-mfe *axLazyElement="items.settings.url"></app-settings-mfe>
+    </ng-container>
+    <ng-container *ngIf="selectedItem === 'rates'">
+      <app-rates-mfe *axLazyElement="items.rates.url"></app-rates-mfe>
+    </ng-container>
+  </mat-sidenav-content>
+</mat-sidenav-container>

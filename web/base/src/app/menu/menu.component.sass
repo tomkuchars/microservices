@@ -1,0 +1,46 @@
+.container
+  position: absolute
+  top: 64px
+  bottom: 0
+  left: 0
+  right: 0
+
+.container
+  @media (max-width: 599px)
+    top: 56px
+
+.header
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+
+.menu
+  display: flex
+  flex-direction: column
+  border: none
+  border-radius: 0
+
+.menu-item
+  height: 48px
+  line-height: 48px
+  font-size: 16px
+
+.menu-item .mat-icon
+  font-size: 16px
+  line-height: 16px
+  height: 16px
+  width: 16px
+
+.menu-item span
+  padding-left: 8px
+
+.menu-item ::ng-deep button
+  text-align: left
+
+.spacer
+  flex: 1 1 auto
+
+.empty
+  text-align: center
+  padding: 10px
