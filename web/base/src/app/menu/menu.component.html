@@ -24,10 +24,10 @@
       <h3 class="empty">Item not selected</h3>
     </ng-container> -->
     <ng-container *ngIf="selectedItem === 'settings'">
-      <app-settings-mfe *axLazyElement="items.settings.url"></app-settings-mfe>
+      <app-settings-mfe *axLazyElement="items['settings'].url"></app-settings-mfe>
     </ng-container>
     <ng-container *ngIf="selectedItem === 'rates'">
-      <app-rates-mfe *axLazyElement="items.rates.url"></app-rates-mfe>
+      <app-rates-mfe *axLazyElement="items['rates']url"></app-rates-mfe>
     </ng-container>
   </mat-sidenav-content>
 </mat-sidenav-container>
