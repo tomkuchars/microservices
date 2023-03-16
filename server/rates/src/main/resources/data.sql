@@ -1,0 +1,11 @@
+INSERT INTO spread (currency, spread) VALUES ('BASE', 0) ON CONFLICT (currency) DO UPDATE SET spread = 0;
+INSERT INTO spread (currency, spread) VALUES ('ELSE', 0.0275) ON CONFLICT (currency) DO UPDATE SET spread = 0.0275;
+INSERT INTO spread (currency, spread) VALUES ('JPY', 0.0325) ON CONFLICT (currency) DO UPDATE SET spread = 0.0325;
+INSERT INTO spread (currency, spread) VALUES ('HKD', 0.0325) ON CONFLICT (currency) DO UPDATE SET spread = 0.0325;
+INSERT INTO spread (currency, spread) VALUES ('KRW', 0.0325) ON CONFLICT (currency) DO UPDATE SET spread = 0.0325;
+INSERT INTO spread (currency, spread) VALUES ('MYR', 0.045) ON CONFLICT (currency) DO UPDATE SET spread = 0.045;
+INSERT INTO spread (currency, spread) VALUES ('INR', 0.045) ON CONFLICT (currency) DO UPDATE SET spread = 0.045;
+INSERT INTO spread (currency, spread) VALUES ('MXN', 0.045) ON CONFLICT (currency) DO UPDATE SET spread = 0.045;
+INSERT INTO spread (currency, spread) VALUES ('RUB', 0.06) ON CONFLICT (currency) DO UPDATE SET spread = 0.06;
+INSERT INTO spread (currency, spread) VALUES ('CNY', 0.06) ON CONFLICT (currency) DO UPDATE SET spread = 0.06;
+INSERT INTO spread (currency, spread) VALUES ('ZAR', 0.06) ON CONFLICT (currency) DO UPDATE SET spread = 0.06;
