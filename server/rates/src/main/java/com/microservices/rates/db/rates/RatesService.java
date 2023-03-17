@@ -1,6 +1,7 @@
 package com.microservices.rates.db.rates;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 
@@ -13,9 +14,9 @@ public interface RatesService {
 
   Mono<Rates> getRatesById(Integer id);
 
-  Mono<Rates> getRatesByBaseAndCurrencyAndDate(String base, String currency, LocalDate date);
+  Mono<Rates> getRatesByBaseAndCurrencyAndDate(String base, String currency, Optional<LocalDate> date);
 
-  Mono<Rates> getRatesByCurrencyAndDate(String currency, LocalDate date);
+  Mono<Rates> getRatesByCurrencyAndDate(Optional<String> currency, Optional<LocalDate> date);
 
   Flux<Rates> getRatesListByDate(LocalDate date);
 

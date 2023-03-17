@@ -1,6 +1,7 @@
 package com.microservices.rates.db.rates;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
@@ -31,14 +32,15 @@ public class RatesServiceImpl implements RatesService {
   }
 
   @Override
-  public Mono<Rates> getRatesByBaseAndCurrencyAndDate(String base, String currency, LocalDate date) {
-    return date != null ? ratesRepository.findTopByBaseAndCurrencyAndDateOrderByIdDesc(base, currency, date)
+  public Mono<Rates> getRatesByBaseAndCurrencyAndDate(String base, String currency, Optional<LocalDate> date) {
+    return date.isPresent() ? ratesRepository.findTopByBaseAndCurrencyAndDateOrderByIdDesc(base, currency, date.get())
         : ratesRepository.findTopByBaseAndCurrencyOrderByDateDescIdDesc(base, currency);
   }
 
   @Override
-  public Mono<Rates> getRatesByCurrencyAndDate(String currency, LocalDate date) {
-    return getRatesByBaseAndCurrencyAndDate(ratesProperties.baseCurrency(), currency, date);
+  public Mono<Rates> getRatesByCurrencyAndDate(Optional<String> currency, Optional<LocalDate> date) {
+    return getRatesByBaseAndCurrencyAndDate(ratesProperties.baseCurrency(),
+        currency.isPresent() ? currency.get() : ratesProperties.baseCurrency(), date);
   }
 
   @Override

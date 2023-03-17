@@ -22,8 +22,7 @@ public class SpreadServiceImpl implements SpreadService {
 
   @Override
   public Mono<Spread> getSpreadByCurrency(String currency) {
-    return Mono.firstWithValue(
-        spreadRepository.findByCurrency(ratesProperties.baseCurrency().equals(currency) ? "BASE" : currency),
-        spreadRepository.findByCurrency("ELSE"));
+    return spreadRepository.findByCurrency(ratesProperties.baseCurrency().equals(currency) ? "BASE" : currency)
+        .switchIfEmpty(spreadRepository.findByCurrency("ELSE"));
   }
 }

@@ -10,10 +10,10 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
-public class ExchangeRouter {
+public class RatesRouter {
 
   @Bean
-  RouterFunction<ServerResponse> route(ExchangeHandler exchangeHandler) {
+  RouterFunction<ServerResponse> route(RatesHandler exchangeHandler) {
     return RouterFunctions
         .route(GET("/exchange"), exchangeHandler::exchange)
         .andRoute(PUT("/load"), exchangeHandler::load);

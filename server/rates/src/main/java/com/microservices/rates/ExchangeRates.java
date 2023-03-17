@@ -1,7 +1,9 @@
 package com.microservices.rates;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.microservices.rates.db.counter.CounterService;
 import com.microservices.rates.db.rates.RatesService;
 import com.microservices.rates.db.spread.SpreadService;
 import com.microservices.rates.rest.model.ExchangeResponse;
+import com.microservices.rates.rest.model.RatesNotFound;
 
 import reactor.core.publisher.Mono;
 
@@ -22,58 +25,37 @@ public class ExchangeRates {
   private final RatesService ratesService;
   private final SpreadService spreadService;
   private final CounterService counterService;
-  private final LoadRates loadRates;
 
-  public ExchangeRates(RatesService ratesService, SpreadService spreadService, CounterService counterService,
-      LoadRates loadRates) {
+  public ExchangeRates(RatesService ratesService, SpreadService spreadService, CounterService counterService) {
     this.ratesService = ratesService;
     this.spreadService = spreadService;
     this.counterService = counterService;
-    this.loadRates = loadRates;
   }
 
-  public Mono<ExchangeResponse> exchange(String from, String to, LocalDate date) { //TODO
-    return this.counterService.createAndIncrementCounter(from, date)
-        .map((Void v) -> new ExchangeResponse(from, to, BigDecimal.TEN));
+  record RatesWithSpread(BigDecimal rate, String currency, BigDecimal spread) {
   }
 
-  // @GetMapping("/exchange")
-  // public ResponseEntity<ExchangeResponse> exchange(@RequestParam(value =
-  // EXCHANGE_PARAM_FROM) String from,
-  // @RequestParam(value = EXCHANGE_PARAM_TO) String to,
-  // @RequestParam(value = EXCHANGE_PARAM_DATE, required = false)
-  // @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-  // Rates fromRates = getRatesAndIncrement(from, EXCHANGE_PARAM_FROM, date);
-  // Rates toRates = getRatesAndIncrement(to, EXCHANGE_PARAM_TO, date);
-  // Spread fromSpread = spreadService.getSpreadByCurrency(from);
-  // Spread toSpread = spreadService.getSpreadByCurrency(to);
-  // Spread spread = fromSpread.spread.compareTo(toSpread.spread) > 0 ? fromSpread
-  // : toSpread;
-  // BigDecimal exchange = toRates.rate.divide(fromRates.rate, EXCHANGE_SCALE,
-  // RoundingMode.HALF_UP)
-  // .multiply(BigDecimal.ONE.subtract(spread.spread)).stripTrailingZeros();
-  // ExchangeResponse exchangeResponse = new ExchangeResponse(from, to, exchange);
-  // return ResponseEntity.ok(exchangeResponse);
-  // }
+  public Mono<ExchangeResponse> exchange(Optional<String> from, Optional<String> to, Optional<LocalDate> date) {
+    return getRatesWithSpread(from, date)
+        .zipWith(getRatesWithSpread(to, date))
+        .map(tuple -> new ExchangeResponse(
+            tuple.getT1().currency(),
+            tuple.getT2().currency(),
+            calculateExchange(tuple.getT1(), tuple.getT2())));
+  }
 
-  // private Rates getRatesAndIncrement(String paramValue, String paramName,
-  // LocalDate date)
-  // throws ResponseStatusException {
-  // Rates rates = ratesService.getRatesByCurrencyAndDate(paramValue, date);
-  // if (rates == null) {
-  // counterService.incrementCounterByCurrencyAndDate(paramValue, date);
-  // throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-  // "Rates not found for " + paramName + "=" + paramValue);
-  // } else {
-  // counterService.incrementCounterByCurrencyAndDate(paramValue, rates.date);
-  // }
-  // return rates;
-  // }
+  private Mono<RatesWithSpread> getRatesWithSpread(Optional<String> currency, Optional<LocalDate> date) {
+    return ratesService.getRatesByCurrencyAndDate(currency, date)
+        .switchIfEmpty(Mono.error(new RatesNotFound()))
+        .doOnSuccess(rates -> counterService.createAndIncrementCounter(rates.getCurrency(), rates.getDate())) // TODO does not run
+        .flatMap(rates -> spreadService.getSpreadByCurrency(rates.getCurrency())
+            .map(spread -> new RatesWithSpread(rates.getRate(), rates.getCurrency(), spread.getSpread())));
+  }
 
-  // @PutMapping("/exchange")
-  // public ResponseEntity<Integer> exchange() {
-  // int size = loadRates.load();
-  // return ResponseEntity.ok(size);
-  // }
+  private BigDecimal calculateExchange(RatesWithSpread from, RatesWithSpread to) {
+    return to.rate().divide(from.rate(), EXCHANGE_SCALE, RoundingMode.HALF_UP)
+        .multiply(BigDecimal.ONE.subtract(from.spread().max(to.spread())))
+        .stripTrailingZeros();
+  }
 
 }
