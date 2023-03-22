@@ -16,11 +16,7 @@ public interface CounterRepository extends ReactiveCrudRepository<Counter, Integ
   Mono<Counter> findByCurrencyAndDate(String currency, LocalDate date);
 
   @Modifying
-  @Query("insert into Counter (currency, date) values (:currency, :date) on conflict do nothing")
-  Mono<Void> createCounter(@Param("currency") String currency, @Param("date") LocalDate date);
-
-  @Modifying
-  @Query("update Counter set counter = counter + 1 where currency=:currency and date=:date")
-  Mono<Void> incrementCounter(@Param("currency") String currency, @Param("date") LocalDate date);
+  @Query("insert into Counter (currency, date, counter) values (:currency, :date, 1) on conflict (currency, date) do update set counter = Counter.counter + 1 where Counter.currency=:currency and Counter.date=:date")
+  Mono<Boolean> incrementCounter(@Param("currency") String currency, @Param("date") LocalDate date);
 
 }

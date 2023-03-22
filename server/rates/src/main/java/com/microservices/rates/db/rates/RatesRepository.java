@@ -3,14 +3,12 @@ package com.microservices.rates.db.rates;
 import java.time.LocalDate;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.microservices.rates.db.rates.model.Rates;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Transactional
 public interface RatesRepository extends ReactiveCrudRepository<Rates, Integer> {
 
   Mono<Rates> findTopByBaseAndCurrencyAndDateOrderByIdDesc(String base, String currency, LocalDate date);

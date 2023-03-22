@@ -46,8 +46,10 @@ public class ExchangeRates {
 
   private Mono<RatesWithSpread> getRatesWithSpread(Optional<String> currency, Optional<LocalDate> date) {
     return ratesService.getRatesByCurrencyAndDate(currency, date)
+        .flatMap(rates -> counterService.incrementCounter(rates.getCurrency(), rates.getDate())
+            .filter(Boolean.TRUE::equals)
+            .map(incremented -> rates))
         .switchIfEmpty(Mono.error(new RatesNotFound()))
-        .doOnSuccess(rates -> counterService.createAndIncrementCounter(rates.getCurrency(), rates.getDate())) // TODO does not run
         .flatMap(rates -> spreadService.getSpreadByCurrency(rates.getCurrency())
             .map(spread -> new RatesWithSpread(rates.getRate(), rates.getCurrency(), spread.getSpread())));
   }

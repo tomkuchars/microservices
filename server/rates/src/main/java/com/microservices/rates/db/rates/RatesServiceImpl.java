@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.microservices.rates.RatesProperties;
 import com.microservices.rates.db.rates.model.Rates;
@@ -14,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-@Transactional
 public class RatesServiceImpl implements RatesService {
 
   private final RatesRepository ratesRepository;

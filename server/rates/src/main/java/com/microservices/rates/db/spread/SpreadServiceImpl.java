@@ -1,7 +1,6 @@
 package com.microservices.rates.db.spread;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.microservices.rates.RatesProperties;
 import com.microservices.rates.db.spread.model.Spread;
@@ -9,7 +8,6 @@ import com.microservices.rates.db.spread.model.Spread;
 import reactor.core.publisher.Mono;
 
 @Service
-@Transactional
 public class SpreadServiceImpl implements SpreadService {
 
   private final SpreadRepository spreadRepository;
